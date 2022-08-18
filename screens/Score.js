@@ -56,7 +56,7 @@ const styles = StyleSheet.create({
   },
   btn: {
     width: "40%",
-    marginTop : 20,
+    marginTop : 40,
     alignSelf : 'center',
     paddingHorizontal: 15,
     paddingVertical: 10,

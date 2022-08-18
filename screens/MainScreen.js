@@ -39,10 +39,9 @@ const MainScreen = ({ navigation }) => {
 
   function moveSlides() {
     setCkeck1(false);
-    if(current+1 === data.length){
-      navigation.navigate('Score', {score})
-
-    }else if (!(current > data.length)) {
+    if (current + 1 === data.length) {
+      navigation.navigate("Score", { score });
+    } else if (!(current > data.length)) {
       setCurrent(current + 1);
     }
   }
@@ -93,37 +92,41 @@ const MainScreen = ({ navigation }) => {
         navigation={navigation}
         score={score}
       />
-      {current !== data.length &&
-        form.map((item, index) => (
-          <CheckBox
-            key={index}
-            containerStyle={styles.checkbox}
-            size={30}
-            checked={item.isCheked}
-            onPress={() => {
-              setCkeck1(true);
-              if (item.isCheked) {
-                if (data[current].answer === item.optionName) {
-                  setScore(score - 5);
+      <View style={styles.questionsContainer}>
+        <Text style={{ fontSize: 18 ,marginVertical : 10 }}>{data[current].question}</Text>
+        {current !== data.length &&
+          form.map((item, index) => (
+            <CheckBox
+              key={index}
+              containerStyle={styles.checkbox}
+              size={30}
+              checked={item.isCheked}
+              onPress={() => {
+                setCkeck1(true);
+                if (item.isCheked) {
+                  if (data[current].answer === item.optionName) {
+                    setScore(score - 5);
+                  }
+                } else {
+                  incrementScore(item.optionName);
+                  if (check1) {
+                    decrementScore(item.optionName);
+                  }
                 }
-              } else {
-                incrementScore(item.optionName);
-                if (check1) {
-                  decrementScore(item.optionName);
-                }
-              }
 
-              onCheckedHandler(index);
-            }}
-            title={item.optionName}
-            textStyle={{ fontSize: 17 }}
-            checkedColor="green"
-          />
-        ))}
-     
+                onCheckedHandler(index);
+              }}
+              title={item.optionName}
+              textStyle={{ fontSize: 17 }}
+              checkedColor="green"
+            />
+          ))}
+      </View>
+      <View style={styles.btnContainer}>
       <TouchableOpacity style={styles.btn} onPress={moveSlides}>
-        <Text>Click</Text>
+        <Text style={{ color: "white", fontSize: 17 }}>Suivant</Text>
       </TouchableOpacity>
+      </View>
     </SafeAreaView>
   );
 };
@@ -135,19 +138,27 @@ const styles = StyleSheet.create({
     flex: 1,
     width: "100%",
   },
-  checkContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    margin: 30,
+  questionsContainer : {
+    alignItems : 'center',
+    flex : 1,
+    justifyContent : 'center',
+    padding : 15
+    
   },
+  
   checkbox: {
     marginRight: 10,
     width: 300,
     // height: 30,
     backgroundColor: "#eee",
+    marginVertical : 10
   },
-
+  btnContainer : {
+    flex : 1,
+    justifyContent : 'center'
+  },
   btn: {
+    
     width: "50%",
     // height : 30,
     alignSelf: "center",

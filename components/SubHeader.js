@@ -1,12 +1,8 @@
 import { StyleSheet, Text, View } from "react-native";
 import React, { useEffect, useState } from "react";
 
-
-const SubHeader = ({navigation ,current, time , setCurrent, setSlide, slide, score}) => {
-
+const SubHeader = ({ navigation, current, time, setCurrent, score }) => {
   const [timeLeft, setTimeLeft] = useState(0);
-
-  
 
   useEffect(() => {
     setTimeLeft(time);
@@ -14,26 +10,17 @@ const SubHeader = ({navigation ,current, time , setCurrent, setSlide, slide, sco
 
   useEffect(() => {
     const interval = setInterval(() => {
-        if(time === 0 ){
-            
-            if(slide === 3) {
-              setSlide(1);
-              setCurrent(0)
-              navigation.navigate('Score',{score});
-            }else{
-              
-              setSlide(slide +1)
-              setCurrent(current +1);
-              
-              
-            }
-            
-            
-        }else{
-            time = time - 1;
-            setTimeLeft(time);
+      if (time === 0) {
+        if (current + 1 === 3) {
+          setCurrent(0);
+          navigation.navigate("Score", { score });
+        } else {
+          setCurrent(current + 1);
         }
-      
+      } else {
+        time = time - 1;
+        setTimeLeft(time);
+      }
     }, 1000);
     return () => clearInterval(interval);
   }, [time]);
@@ -95,7 +82,6 @@ const SubHeader = ({navigation ,current, time , setCurrent, setSlide, slide, sco
           </View>
         </View>
       </View>
-      
     </View>
   );
 };

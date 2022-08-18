@@ -5,12 +5,10 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import React, {useState } from "react";
+import React, { useState, useEffect } from "react";
 import Header from "../components/Header";
-
 import SubHeader from "../components/SubHeader";
-import MyCheckBox from "../components/MyCheckBox";
-
+import { CheckBox } from "@rneui/themed";
 
 const data = [
   {
@@ -35,93 +33,97 @@ const data = [
 ];
 const MainScreen = ({ navigation }) => {
   const [current, setCurrent] = useState(0);
-  const [currentAnswer, setCurrentAnswer] = useState(undefined);
   const [score, setScore] = useState(0);
- 
-  const [slide, setSlide] = useState(1);
+  const [form, setForm] = useState([]);
+  const [check1, setCkeck1] = useState(false);
 
- 
+  function moveSlides() {
+    setCkeck1(false);
+    if(current+1 === data.length){
+      navigation.navigate('Score', {score})
 
-  
+    }else if (!(current > data.length)) {
+      setCurrent(current + 1);
+    }
+  }
+  function incrementScore(answer) {
+    if (data[current].answer === answer) {
+      setScore(score + 5);
+    }
+  }
+  function decrementScore(answer) {
+    if (data[current].answer !== answer) {
+      setScore(score - 5);
+    }
+  }
+  function onCheckedHandler(index) {
+    const array = [];
+    form.map((item, i) => {
+      if (index === i) {
+        array.push({
+          optionName: item.optionName,
+          isCheked: !item.isCheked,
+        });
+      } else {
+        array.push({ optionName: item.optionName, isCheked: false });
+      }
+    });
+
+    setForm(array);
+  }
+
+  useEffect(() => {
+    const array = [];
+    data[current]?.options.map((op) => {
+      array.unshift({
+        optionName: op,
+        isCheked: false,
+      });
+    });
+    setForm(array);
+  }, [current]);
+
   return (
     <SafeAreaView style={styles.container}>
       <Header />
       <SubHeader
         current={current}
-        setSlide={setSlide}
-        slide={slide}
         time={data[current]?.time}
         setCurrent={setCurrent}
         navigation={navigation}
         score={score}
       />
-
-      <View style={styles.questions}>
-        <Text
-          style={{
-            fontSize: 18,
-            marginBottom: 5,
-          }}
-        >
-          Question {current !== data.length && current + 1}
-        </Text>
-        <Text
-          style={{
-            fontSize: 16,
-            marginBottom: 20,
-          }}
-        >
-          {current !== data.length && data[current].question}
-        </Text>
-        <View>
-          {current !== data.length &&
-            data[current].options.map((option, index) => (
-              <View style={styles.option} key={index}>
-                <MyCheckBox
-                  setCurrentAnswer={setCurrentAnswer}
-                  id={index}
-                  option={option}
-                  
-                />
-              </View>
-            ))}
-        </View>
-      </View>
-
-      <View
-        style={{
-          flex: 1,
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <TouchableOpacity
-          style={styles.btn}
-          onPress={() => {
-            
-            if (slide === data.length) {
-              if (
-                data[current].answer === data[current].options[currentAnswer]
-              ) {
-                setScore(score + 5);
-                
+      {current !== data.length &&
+        form.map((item, index) => (
+          <CheckBox
+            key={index}
+            containerStyle={styles.checkbox}
+            size={30}
+            checked={item.isCheked}
+            onPress={() => {
+              setCkeck1(true);
+              if (item.isCheked) {
+                if (data[current].answer === item.optionName) {
+                  setScore(score - 5);
+                }
+              } else {
+                incrementScore(item.optionName);
+                if (check1) {
+                  decrementScore(item.optionName);
+                }
               }
-              navigation.navigate("Score", { score });
 
-            } else {
-              if (
-                data[current].answer === data[current].options[currentAnswer]
-              ) {
-                setScore(score + 5);
-              }
-              setCurrent(current + 1);
-              setSlide(slide + 1);
-            }
-          }}
-        >
-          <Text style={{ color: "white", fontSize: 18 }}>Suivant</Text>
-        </TouchableOpacity>
-      </View>
+              onCheckedHandler(index);
+            }}
+            title={item.optionName}
+            textStyle={{ fontSize: 17 }}
+            checkedColor="green"
+          />
+        ))}
+     
+      <TouchableOpacity style={styles.btn} onPress={moveSlides}>
+        <Text>Click</Text>
+      </TouchableOpacity>
     </SafeAreaView>
   );
 };
@@ -132,40 +134,17 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     width: "100%",
-    
   },
-  subHeader: {
-    width: "80%",
-    flexDirection: "row",
-    padding: 8,
-    backgroundColor: "white",
-    justifyContent: "space-between",
-    minHeight: 70,
-    top: -35,
-    borderRadius: 15,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 3,
-    },
-    shadowOpacity: 0.27,
-    shadowRadius: 4.65,
-
-    elevation: 6,
-  },
-  questions: {
-    paddingLeft: 40,
-  },
-  option: {
+  checkContainer: {
     flexDirection: "row",
     alignItems: "center",
-    marginVertical: 8,
+    margin: 30,
   },
-  ckeckbox: {
-    marginRight: 7,
-    width: 25,
-    height: 25,
-    color: "red",
+  checkbox: {
+    marginRight: 10,
+    width: 300,
+    // height: 30,
+    backgroundColor: "#eee",
   },
 
   btn: {
